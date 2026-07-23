@@ -1,5 +1,7 @@
 # Persistent Notification Feed Card
 
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=lennartschulte&repository=HomeassistantNotification&category=plugin)
+
 Eine schlanke Lovelace-Custom-Card für Home Assistant, die alle aktiven
 [`persistent_notification`](https://www.home-assistant.io/integrations/persistent_notification/)-Einträge
 auf dem Dashboard anzeigt — inklusive Dismiss-Button pro Eintrag.
@@ -21,6 +23,13 @@ Anzeige auf dem Dashboard.
 ## Installation
 
 ### Über HACS (empfohlen)
+
+Am schnellsten über den Badge oben: Klick öffnet direkt den „Repository
+hinzufügen“-Dialog in deiner HA-Instanz (setzt eine verknüpfte
+[My-Home-Assistant](https://www.home-assistant.io/integrations/my/)-Instanz
+voraus, ist standardmäßig aktiv).
+
+Alternativ manuell:
 
 1. HACS öffnen → **Frontend** → Menü (⋮) → **Benutzerdefinierte Repositories**.
 2. Dieses Repository als URL eintragen, Kategorie **Dashboard** (Plugin) wählen.
