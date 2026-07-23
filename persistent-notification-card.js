@@ -4,6 +4,7 @@ class PersistentNotificationCard extends HTMLElement {
     if (!this.shadowRoot) {
       this.attachShadow({ mode: "open" });
     }
+    this._notificationsById = {};
     this._notifications = [];
     this._render();
   }
@@ -31,14 +32,24 @@ class PersistentNotificationCard extends HTMLElement {
   _subscribe() {
     // persistent_notification entries are not exposed as regular entities
     // in hass.states — they only exist via this dedicated WebSocket API,
-    // the same one the built-in notification bell uses.
+    // the same one the built-in notification bell uses. Each event carries
+    // { type: current|added|removed|updated, notifications: {id: {...}} },
+    // a dict keyed by notification_id, not an array.
     this._unsubscribe = this._hass.connection.subscribeMessage(
-      (notifications) => {
-        this._notifications = notifications
-          .slice()
-          .sort((a, b) =>
-            (b.created_at || "").localeCompare(a.created_at || "")
-          );
+      (msg) => {
+        if (msg.type === "current") {
+          this._notificationsById = { ...msg.notifications };
+        } else if (msg.type === "removed") {
+          for (const id of Object.keys(msg.notifications)) {
+            delete this._notificationsById[id];
+          }
+        } else {
+          Object.assign(this._notificationsById, msg.notifications);
+        }
+
+        this._notifications = Object.values(this._notificationsById).sort(
+          (a, b) => (b.created_at || "").localeCompare(a.created_at || "")
+        );
         if (this._config.max) {
           this._notifications = this._notifications.slice(
             0,
