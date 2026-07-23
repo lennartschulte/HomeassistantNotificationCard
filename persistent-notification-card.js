@@ -4,29 +4,51 @@ class PersistentNotificationCard extends HTMLElement {
     if (!this.shadowRoot) {
       this.attachShadow({ mode: "open" });
     }
+    this._notifications = [];
     this._render();
   }
 
   set hass(hass) {
     this._hass = hass;
-    this._notifications = Object.keys(hass.states)
-      .filter((entityId) => entityId.startsWith("persistent_notification."))
-      .map((entityId) => {
-        const state = hass.states[entityId];
-        return {
-          notificationId: entityId.slice("persistent_notification.".length),
-          title: state.attributes.title,
-          message: state.attributes.message || "",
-          createdAt: state.attributes.created_at,
-        };
-      })
-      .sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
-
-    if (this._config.max) {
-      this._notifications = this._notifications.slice(0, this._config.max);
+    if (!this._unsubscribe) {
+      this._subscribe();
     }
+  }
 
-    this._render();
+  connectedCallback() {
+    if (this._hass && !this._unsubscribe) {
+      this._subscribe();
+    }
+  }
+
+  disconnectedCallback() {
+    if (this._unsubscribe) {
+      this._unsubscribe.then((unsub) => unsub());
+      this._unsubscribe = undefined;
+    }
+  }
+
+  _subscribe() {
+    // persistent_notification entries are not exposed as regular entities
+    // in hass.states — they only exist via this dedicated WebSocket API,
+    // the same one the built-in notification bell uses.
+    this._unsubscribe = this._hass.connection.subscribeMessage(
+      (notifications) => {
+        this._notifications = notifications
+          .slice()
+          .sort((a, b) =>
+            (b.created_at || "").localeCompare(a.created_at || "")
+          );
+        if (this._config.max) {
+          this._notifications = this._notifications.slice(
+            0,
+            this._config.max
+          );
+        }
+        this._render();
+      },
+      { type: "persistent_notification/subscribe" }
+    );
   }
 
   _dismiss(notificationId) {
@@ -106,13 +128,13 @@ class PersistentNotificationCard extends HTMLElement {
             : notifications
                 .map(
                   (n) => `
-              <div class="notification" data-id="${n.notificationId}">
+              <div class="notification" data-id="${n.notification_id}">
                 <div class="content">
                   ${n.title ? `<div class="title">${n.title}</div>` : ""}
-                  <div class="message">${n.message}</div>
+                  <div class="message">${n.message || ""}</div>
                   ${
-                    n.createdAt
-                      ? `<div class="timestamp">${n.createdAt}</div>`
+                    n.created_at
+                      ? `<div class="timestamp">${n.created_at}</div>`
                       : ""
                   }
                 </div>

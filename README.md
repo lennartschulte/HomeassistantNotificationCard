@@ -92,7 +92,11 @@ Ein erneuter `create`-Aufruf mit derselben `notification_id` überschreibt den
 bestehenden Eintrag (Titel, Nachricht, Zeitstempel) — das ist eingebautes
 Verhalten von Home Assistant, dafür ist keine zusätzliche Logik nötig.
 
-> **Hinweis:** Verwende für `notification_id` möglichst slug-artige Werte
-> (Buchstaben, Zahlen, Unterstriche, keine Leerzeichen/Sonderzeichen), da die
-> ID unverändert als Entity-ID-Suffix (`persistent_notification.<id>`)
-> verwendet und für den Dismiss-Button in dieser Karte 1:1 zurückgegeben wird.
+Die Karte liest die aktive Liste über dieselbe WebSocket-API
+(`persistent_notification/subscribe`), die auch das eingebaute
+Glocken-Symbol im HA-Frontend nutzt — `persistent_notification`-Einträge
+existieren nicht als reguläre Entity in `hass.states`, daher greift die Karte
+nicht auf State-Attribute zu, sondern direkt auf diese API. Die
+`notification_id` wird dabei unverändert 1:1 durchgereicht (kein Slugify),
+der Dismiss-Button funktioniert also unabhängig davon, welche Zeichen die ID
+enthält.
