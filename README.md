@@ -1,6 +1,6 @@
 # Persistent Notification Feed Card
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=lennartschulte&repository=HomeassistantNotification&category=plugin)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=lennartschulte&repository=HomeassistantNotificationCard&category=plugin)
 
 Eine schlanke Lovelace-Custom-Card für Home Assistant, die alle aktiven
 [`persistent_notification`](https://www.home-assistant.io/integrations/persistent_notification/)-Einträge
@@ -36,7 +36,7 @@ Alternativ manuell:
 3. Karte installieren.
 4. Falls die Ressource nicht automatisch eingetragen wird: **Einstellungen →
    Dashboards → Ressourcen** → neue Ressource hinzufügen, Pfad
-   `/hacsfiles/HomeassistantNotification/persistent-notification-card.js`,
+   `/hacsfiles/HomeassistantNotificationCard/persistent-notification-card.js`,
    Typ **JavaScript-Modul**.
 5. Browser-Cache leeren / Frontend neu laden.
 
