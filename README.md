@@ -15,8 +15,11 @@ Anzeige auf dem Dashboard.
 
 ## Funktionen
 
-- Zeigt Titel, Nachricht und Erstellungszeitpunkt jeder aktiven Notification.
+- Zeigt Titel, Nachricht und relativen Zeitpunkt (z. B. „vor 25 Minuten“)
+  jeder aktiven Notification.
 - Dismiss-Button (×) pro Eintrag → ruft `persistent_notification.dismiss` auf.
+- Optional: Karte komplett ausblenden, wenn keine Benachrichtigungen da sind.
+- Eigener visueller Editor — Konfiguration ganz ohne YAML möglich.
 - Aktualisiert sich automatisch, sobald sich der Home-Assistant-State ändert.
 - Kein Build-Step, keine Abhängigkeiten — ein einzelnes JS-File.
 
@@ -49,25 +52,33 @@ Alternativ manuell:
 
 ## Verwendung im UI-Editor
 
-Auch wenn dein Dashboard im UI-Editor (Storage-Modus) läuft, wird eine
-Custom Card immer über die **manuelle** YAML-Eingabe der einzelnen Karte
-hinzugefügt (das betrifft nur diese eine Karte, nicht das gesamte Dashboard):
+Die Karte hat einen eigenen visuellen Editor — nach dem Hinzufügen einfach
+über die normale Karten-Konfiguration (Zahnrad-Symbol) Titel, maximale
+Anzahl und „Karte ausblenden, wenn leer“ einstellen, kein YAML nötig.
+
+Alternativ manuell per YAML:
 
 1. Dashboard bearbeiten → **Karte hinzufügen** → ganz unten **Manuell**
-   auswählen.
+   auswählen (oder bei einer bestehenden Karte oben rechts auf **YAML
+   bearbeiten** wechseln).
 2. Folgendes einfügen:
 
    ```yaml
    type: custom:persistent-notification-card
    title: Benachrichtigungen
+   hide_if_empty: true
    ```
 
 ### Konfigurationsoptionen
 
-| Option  | Pflicht | Beschreibung                                      |
-| ------- | ------- | -------------------------------------------------- |
-| `title` | nein    | Überschrift der Karte (Standard: „Benachrichtigungen“) |
-| `max`   | nein    | Maximale Anzahl angezeigter Einträge                |
+| Option          | Pflicht | Beschreibung                                                              |
+| --------------- | ------- | -------------------------------------------------------------------------- |
+| `title`         | nein    | Überschrift der Karte (Standard: „Benachrichtigungen“)                     |
+| `max`           | nein    | Maximale Anzahl angezeigter Einträge                                       |
+| `hide_if_empty` | nein    | Blendet die gesamte Karte aus, solange keine Benachrichtigungen vorhanden sind (Standard: `false`) |
+
+Zeitstempel werden relativ angezeigt (z. B. „vor 25 Minuten“), passend zur
+im Browser/HA eingestellten Sprache, und aktualisieren sich automatisch.
 
 ## Notifications erzeugen, aktualisieren, löschen
 

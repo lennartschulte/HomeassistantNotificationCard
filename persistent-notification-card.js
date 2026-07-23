@@ -20,12 +20,21 @@ class PersistentNotificationCard extends HTMLElement {
     if (this._hass && !this._unsubscribe) {
       this._subscribe();
     }
+    if (!this._tickInterval) {
+      // Keeps relative timestamps ("vor 5 Minuten") fresh even without
+      // new notification events.
+      this._tickInterval = setInterval(() => this._render(), 60000);
+    }
   }
 
   disconnectedCallback() {
     if (this._unsubscribe) {
       this._unsubscribe.then((unsub) => unsub());
       this._unsubscribe = undefined;
+    }
+    if (this._tickInterval) {
+      clearInterval(this._tickInterval);
+      this._tickInterval = undefined;
     }
   }
 
@@ -68,11 +77,48 @@ class PersistentNotificationCard extends HTMLElement {
     });
   }
 
+  _relativeTime(isoString) {
+    if (!isoString) return "";
+    const date = new Date(isoString);
+    if (Number.isNaN(date.getTime())) return isoString;
+
+    const divisions = [
+      { amount: 60, unit: "second" },
+      { amount: 60, unit: "minute" },
+      { amount: 24, unit: "hour" },
+      { amount: 7, unit: "day" },
+      { amount: 4.34524, unit: "week" },
+      { amount: 12, unit: "month" },
+      { amount: Infinity, unit: "year" },
+    ];
+    const lang =
+      (this._hass && this._hass.locale && this._hass.locale.language) ||
+      navigator.language;
+    const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
+
+    let duration = (date.getTime() - Date.now()) / 1000;
+    for (const division of divisions) {
+      if (Math.abs(duration) < division.amount) {
+        return rtf.format(Math.round(duration), division.unit);
+      }
+      duration /= division.amount;
+    }
+    return "";
+  }
+
   _render() {
     if (!this.shadowRoot) return;
 
-    const title = this._config.title || "Benachrichtigungen";
     const notifications = this._notifications || [];
+
+    if (this._config.hide_if_empty && notifications.length === 0) {
+      this.style.display = "none";
+      this.shadowRoot.innerHTML = "";
+      return;
+    }
+    this.style.display = "";
+
+    const title = this._config.title || "Benachrichtigungen";
 
     this.shadowRoot.innerHTML = `
       <style>
@@ -145,7 +191,9 @@ class PersistentNotificationCard extends HTMLElement {
                   <div class="message">${n.message || ""}</div>
                   ${
                     n.created_at
-                      ? `<div class="timestamp">${n.created_at}</div>`
+                      ? `<div class="timestamp">${this._relativeTime(
+                          n.created_at
+                        )}</div>`
                       : ""
                   }
                 </div>
@@ -167,15 +215,74 @@ class PersistentNotificationCard extends HTMLElement {
   }
 
   getCardSize() {
-    return 1 + (this._notifications ? this._notifications.length : 0);
+    const notifications = this._notifications || [];
+    if (this._config.hide_if_empty && notifications.length === 0) {
+      return 0;
+    }
+    return 1 + notifications.length;
+  }
+
+  static getConfigElement() {
+    return document.createElement("persistent-notification-card-editor");
   }
 
   static getStubConfig() {
-    return { title: "Benachrichtigungen" };
+    return { title: "Benachrichtigungen", hide_if_empty: false };
+  }
+}
+
+class PersistentNotificationCardEditor extends HTMLElement {
+  setConfig(config) {
+    this._config = config || {};
+    this._render();
+  }
+
+  set hass(hass) {
+    this._hass = hass;
+    this._render();
+  }
+
+  _render() {
+    if (!this._hass) return;
+
+    if (!this._form) {
+      this._form = document.createElement("ha-form");
+      this._form.addEventListener("value-changed", (ev) => {
+        this._config = ev.detail.value;
+        this.dispatchEvent(
+          new CustomEvent("config-changed", {
+            detail: { config: this._config },
+            bubbles: true,
+            composed: true,
+          })
+        );
+      });
+      this.appendChild(this._form);
+    }
+
+    this._form.hass = this._hass;
+    this._form.data = this._config;
+    this._form.schema = [
+      { name: "title", label: "Titel", selector: { text: {} } },
+      {
+        name: "max",
+        label: "Maximale Anzahl Einträge",
+        selector: { number: { mode: "box", min: 0 } },
+      },
+      {
+        name: "hide_if_empty",
+        label: "Karte ausblenden, wenn keine Benachrichtigungen vorhanden sind",
+        selector: { boolean: {} },
+      },
+    ];
   }
 }
 
 customElements.define("persistent-notification-card", PersistentNotificationCard);
+customElements.define(
+  "persistent-notification-card-editor",
+  PersistentNotificationCardEditor
+);
 
 window.customCards = window.customCards || [];
 window.customCards.push({
