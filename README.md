@@ -75,6 +75,8 @@ Manual YAML alternative:
 | Option          | Required | Description                                                                     |
 | --------------- | -------- | --------------------------------------------------------------------------------- |
 | `title`         | no       | Card heading (default: "Notifications")                                          |
+| `empty_text`    | no       | Text shown when there are no notifications (default: "No notifications") — set this to translate the card into your own language |
+| `dismiss_text`  | no       | Tooltip text on the dismiss (×) button (default: "Dismiss")                       |
 | `max`           | no       | Maximum number of entries shown                                                  |
 | `hide_if_empty` | no       | Hides the entire card while there are no active notifications (default: `false`) |
 

@@ -118,7 +118,9 @@ class PersistentNotificationCard extends HTMLElement {
     }
     this.style.display = "";
 
-    const title = this._config.title || "Benachrichtigungen";
+    const title = this._config.title || "Notifications";
+    const emptyText = this._config.empty_text || "No notifications";
+    const dismissText = this._config.dismiss_text || "Dismiss";
 
     this.shadowRoot.innerHTML = `
       <style>
@@ -181,7 +183,7 @@ class PersistentNotificationCard extends HTMLElement {
         <div class="header">${title}</div>
         ${
           notifications.length === 0
-            ? `<div class="empty">Keine Benachrichtigungen</div>`
+            ? `<div class="empty">${emptyText}</div>`
             : notifications
                 .map(
                   (n) => `
@@ -197,7 +199,7 @@ class PersistentNotificationCard extends HTMLElement {
                       : ""
                   }
                 </div>
-                <button class="dismiss" title="Ausblenden">&times;</button>
+                <button class="dismiss" title="${dismissText}">&times;</button>
               </div>
             `
                 )
@@ -227,7 +229,7 @@ class PersistentNotificationCard extends HTMLElement {
   }
 
   static getStubConfig() {
-    return { title: "Benachrichtigungen", hide_if_empty: false };
+    return { title: "Notifications", hide_if_empty: false };
   }
 }
 
@@ -264,12 +266,16 @@ class PersistentNotificationCardEditor extends HTMLElement {
     this._form.data = this._config;
     this._form.schema = [
       { name: "title", selector: { text: {} } },
+      { name: "empty_text", selector: { text: {} } },
+      { name: "dismiss_text", selector: { text: {} } },
       { name: "max", selector: { number: { mode: "box", min: 0 } } },
       { name: "hide_if_empty", selector: { boolean: {} } },
     ];
     this._form.computeLabel = (schema) => {
       const labels = {
         title: "Title",
+        empty_text: "Text when there are no notifications",
+        dismiss_text: "Dismiss button tooltip",
         max: "Max notifications shown",
         hide_if_empty: "Hide card when there are no notifications",
       };
