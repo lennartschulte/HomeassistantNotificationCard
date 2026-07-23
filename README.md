@@ -1,113 +1,113 @@
 # Persistent Notification Feed Card
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=lennartschulte&repository=HomeassistantNotificationCard&category=plugin)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+[![GitHub release](https://img.shields.io/github/v/release/lennartschulte/HomeassistantNotificationCard)](https://github.com/lennartschulte/HomeassistantNotificationCard/releases)
 
-Eine schlanke Lovelace-Custom-Card für Home Assistant, die alle aktiven
-[`persistent_notification`](https://www.home-assistant.io/integrations/persistent_notification/)-Einträge
-auf dem Dashboard anzeigt — inklusive Dismiss-Button pro Eintrag.
+A lightweight Lovelace custom card for Home Assistant that shows all active
+[`persistent_notification`](https://www.home-assistant.io/integrations/persistent_notification/)
+entries on your dashboard — including a per-item dismiss button.
 
-Gedacht als leichtgewichtiger Ersatz für die nicht mehr funktionierende Karte
+Built as a minimal replacement for the no-longer-working
 [gadgetchnnel/lovelace-home-feed-card](https://github.com/gadgetchnnel/lovelace-home-feed-card).
-Es wird bewusst kein neuer Benachrichtigungs-Mechanismus eingeführt — das
-Backend bleibt zu 100 % Bordmittel (`persistent_notification.create` /
-`persistent_notification.dismiss`). Diese Karte kümmert sich nur um die
-Anzeige auf dem Dashboard.
+No new notification mechanism is introduced — the backend stays 100% built-in
+Home Assistant (`persistent_notification.create` /
+`persistent_notification.dismiss`). This card only handles the dashboard
+display.
 
-## Funktionen
+## Features
 
-- Zeigt Titel, Nachricht und relativen Zeitpunkt (z. B. „vor 25 Minuten“)
-  jeder aktiven Notification.
-- Dismiss-Button (×) pro Eintrag → ruft `persistent_notification.dismiss` auf.
-- Optional: Karte komplett ausblenden, wenn keine Benachrichtigungen da sind.
-- Eigener visueller Editor — Konfiguration ganz ohne YAML möglich.
-- Aktualisiert sich automatisch, sobald sich der Home-Assistant-State ändert.
-- Kein Build-Step, keine Abhängigkeiten — ein einzelnes JS-File.
+- Shows title, message, and relative time (e.g. "25 minutes ago") for every
+  active notification.
+- Dismiss button (×) per entry → calls `persistent_notification.dismiss`.
+- Optional: hide the whole card when there are no notifications.
+- Own visual editor — configure it entirely without YAML.
+- Updates automatically as the Home Assistant state changes.
+- No build step, no dependencies — a single JS file.
 
 ## Installation
 
-### Über HACS (empfohlen)
+### Via HACS (recommended)
 
-Am schnellsten über den Badge oben: Klick öffnet direkt den „Repository
-hinzufügen“-Dialog in deiner HA-Instanz (setzt eine verknüpfte
-[My-Home-Assistant](https://www.home-assistant.io/integrations/my/)-Instanz
-voraus, ist standardmäßig aktiv).
+Fastest via the badge above: clicking it opens the "Add repository" dialog
+directly in your HA instance (requires a linked
+[My Home Assistant](https://www.home-assistant.io/integrations/my/)
+instance, which is enabled by default).
 
-Alternativ manuell:
+Manual alternative:
 
-1. HACS öffnen → **Frontend** → Menü (⋮) → **Benutzerdefinierte Repositories**.
-2. Dieses Repository als URL eintragen, Kategorie **Dashboard** (Plugin) wählen.
-3. Karte installieren.
-4. Falls die Ressource nicht automatisch eingetragen wird: **Einstellungen →
-   Dashboards → Ressourcen** → neue Ressource hinzufügen, Pfad
+1. Open HACS → **Frontend** → menu (⋮) → **Custom repositories**.
+2. Add this repository's URL, category **Dashboard** (plugin).
+3. Install the card.
+4. If the resource isn't added automatically: **Settings → Dashboards →
+   Resources** → add a new resource, URL
    `/hacsfiles/HomeassistantNotificationCard/persistent-notification-card.js`,
-   Typ **JavaScript-Modul**.
-5. Browser-Cache leeren / Frontend neu laden.
+   type **JavaScript Module**.
+5. Clear your browser cache / reload the frontend.
 
-### Manuell
+### Manual
 
-1. `persistent-notification-card.js` in `www/` deiner Home-Assistant-Config
-   ablegen (z. B. `www/persistent-notification-card.js`).
-2. **Einstellungen → Dashboards → Ressourcen** → neue Ressource:
-   Pfad `/local/persistent-notification-card.js`, Typ **JavaScript-Modul**.
+1. Copy `persistent-notification-card.js` into `www/` in your Home Assistant
+   config (e.g. `www/persistent-notification-card.js`).
+2. **Settings → Dashboards → Resources** → add a new resource: URL
+   `/local/persistent-notification-card.js`, type **JavaScript Module**.
 
-## Verwendung im UI-Editor
+## Using the UI editor
 
-Die Karte hat einen eigenen visuellen Editor — nach dem Hinzufügen einfach
-über die normale Karten-Konfiguration (Zahnrad-Symbol) Titel, maximale
-Anzahl und „Karte ausblenden, wenn leer“ einstellen, kein YAML nötig.
+The card ships with its own visual editor — after adding it, just open the
+regular card configuration (gear icon) to set title, max entries, and "Hide
+card when there are no notifications", no YAML required.
 
-Alternativ manuell per YAML:
+Manual YAML alternative:
 
-1. Dashboard bearbeiten → **Karte hinzufügen** → ganz unten **Manuell**
-   auswählen (oder bei einer bestehenden Karte oben rechts auf **YAML
-   bearbeiten** wechseln).
-2. Folgendes einfügen:
+1. Edit dashboard → **Add card** → scroll down and choose **Manual** (or, on
+   an existing card, switch to **Edit in YAML** in the top-right menu).
+2. Paste the following:
 
    ```yaml
    type: custom:persistent-notification-card
-   title: Benachrichtigungen
+   title: Notifications
    hide_if_empty: true
    ```
 
-### Konfigurationsoptionen
+### Configuration options
 
-| Option          | Pflicht | Beschreibung                                                              |
-| --------------- | ------- | -------------------------------------------------------------------------- |
-| `title`         | nein    | Überschrift der Karte (Standard: „Benachrichtigungen“)                     |
-| `max`           | nein    | Maximale Anzahl angezeigter Einträge                                       |
-| `hide_if_empty` | nein    | Blendet die gesamte Karte aus, solange keine Benachrichtigungen vorhanden sind (Standard: `false`) |
+| Option          | Required | Description                                                                     |
+| --------------- | -------- | --------------------------------------------------------------------------------- |
+| `title`         | no       | Card heading (default: "Notifications")                                          |
+| `max`           | no       | Maximum number of entries shown                                                  |
+| `hide_if_empty` | no       | Hides the entire card while there are no active notifications (default: `false`) |
 
-Zeitstempel werden relativ angezeigt (z. B. „vor 25 Minuten“), passend zur
-im Browser/HA eingestellten Sprache, und aktualisieren sich automatisch.
+Timestamps are shown as relative time (e.g. "25 minutes ago"), matching the
+language configured in your browser/HA, and refresh automatically.
 
-## Notifications erzeugen, aktualisieren, löschen
+## Creating, updating, and dismissing notifications
 
-Alles läuft über die eingebauten Home-Assistant-Services — die Karte zeigt
-nur an, was dort existiert.
+Everything runs through the built-in Home Assistant services — the card
+only displays what already exists.
 
 ```yaml
-# Erstellen (oder aktualisieren, wenn die notification_id bereits existiert)
+# Create (or update, if the notification_id already exists)
 service: persistent_notification.create
 data:
   notification_id: battery_low
-  title: Batterie schwach
-  message: "Sensor XY hat noch 8 % Batterie."
+  title: Battery low
+  message: "Sensor XY is at 8% battery."
 
-# Löschen / Ausblenden
+# Dismiss / remove
 service: persistent_notification.dismiss
 data:
   notification_id: battery_low
 ```
 
-Ein erneuter `create`-Aufruf mit derselben `notification_id` überschreibt den
-bestehenden Eintrag (Titel, Nachricht, Zeitstempel) — das ist eingebautes
-Verhalten von Home Assistant, dafür ist keine zusätzliche Logik nötig.
+Calling `create` again with the same `notification_id` overwrites the
+existing entry (title, message, timestamp) — this is built-in Home Assistant
+behavior, no extra logic is needed for it.
 
-Die Karte liest die aktive Liste über dieselbe WebSocket-API
-(`persistent_notification/subscribe`), die auch das eingebaute
-Glocken-Symbol im HA-Frontend nutzt — `persistent_notification`-Einträge
-existieren nicht als reguläre Entity in `hass.states`, daher greift die Karte
-nicht auf State-Attribute zu, sondern direkt auf diese API. Die
-`notification_id` wird dabei unverändert 1:1 durchgereicht (kein Slugify),
-der Dismiss-Button funktioniert also unabhängig davon, welche Zeichen die ID
-enthält.
+The card reads the active list via the same WebSocket API
+(`persistent_notification/subscribe`) that the built-in notification bell in
+the HA frontend uses — `persistent_notification` entries don't exist as
+regular entities in `hass.states`, so the card doesn't read state
+attributes, it talks to this API directly. The `notification_id` is passed
+through unchanged (no slugifying), so the dismiss button works regardless of
+which characters the ID contains.

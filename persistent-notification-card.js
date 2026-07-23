@@ -263,18 +263,18 @@ class PersistentNotificationCardEditor extends HTMLElement {
     this._form.hass = this._hass;
     this._form.data = this._config;
     this._form.schema = [
-      { name: "title", label: "Titel", selector: { text: {} } },
-      {
-        name: "max",
-        label: "Maximale Anzahl Einträge",
-        selector: { number: { mode: "box", min: 0 } },
-      },
-      {
-        name: "hide_if_empty",
-        label: "Karte ausblenden, wenn keine Benachrichtigungen vorhanden sind",
-        selector: { boolean: {} },
-      },
+      { name: "title", selector: { text: {} } },
+      { name: "max", selector: { number: { mode: "box", min: 0 } } },
+      { name: "hide_if_empty", selector: { boolean: {} } },
     ];
+    this._form.computeLabel = (schema) => {
+      const labels = {
+        title: "Title",
+        max: "Max notifications shown",
+        hide_if_empty: "Hide card when there are no notifications",
+      };
+      return labels[schema.name] || schema.name;
+    };
   }
 }
 
